@@ -1,0 +1,31 @@
+name: Update Google Sheet
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # This runs the job every 5 minutes
+  workflow_dispatch:
+
+jobs:
+  update-gsheet:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install gspread oauth2client
+
+    - name: Run Python script
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      run: |
+        echo "$GOOGLE_CREDENTIALS" > credentials.json
+        python write_to_gsheet.py
